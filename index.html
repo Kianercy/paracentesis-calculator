@@ -3,513 +3,630 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paracentesis Recurrence Calculator</title>
+    <title>First-LVP Paracentesis Risk Calculator</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
+        
         .container {
             max-width: 900px;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
+            border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
         }
-
+        
         .header {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-
+        
         .header h1 {
             font-size: 28px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
-
+        
         .header p {
             font-size: 14px;
             opacity: 0.9;
         }
-
+        
         .content {
             padding: 30px;
         }
-
+        
+        .alert {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+        }
+        
         .section {
             margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            background: #f8f9fa;
         }
-
+        
         .section-title {
             font-size: 18px;
-            font-weight: 600;
-            color: #2a5298;
+            font-weight: bold;
+            color: #1e3c72;
             margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
         }
-
-        .input-group {
+        
+        .section-number {
+            background: #1e3c72;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        
+        .form-group {
             margin-bottom: 20px;
         }
-
-        .input-group label {
+        
+        label {
             display: block;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 8px;
             color: #333;
         }
-
-        .input-group input[type="number"],
-        .input-group select {
+        
+        input[type="number"], select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 16px;
             transition: border-color 0.3s;
         }
-
-        .input-group input[type="number"]:focus,
-        .input-group select:focus {
+        
+        input[type="number"]:focus, select:focus {
             outline: none;
             border-color: #667eea;
         }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-top: 15px;
+        
+        .helper-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
         }
-
-        .checkbox-group input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        .checkbox-group label {
-            margin: 0;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
+        
         .calculate-btn {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             font-size: 18px;
-            font-weight: 600;
+            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
+            margin-top: 20px;
         }
-
+        
         .calculate-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-
-        .calculate-btn:active {
-            transform: translateY(0);
-        }
-
+        
         .results {
             display: none;
             margin-top: 30px;
             padding: 25px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
         }
-
+        
         .results.show {
             display: block;
-            animation: slideIn 0.4s ease-out;
+            animation: slideIn 0.5s ease-out;
         }
-
+        
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(-10px);
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-
+        
         .result-item {
-            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #667eea;
         }
-
+        
         .result-label {
-            font-weight: 600;
-            color: #555;
+            font-size: 14px;
+            color: #666;
             margin-bottom: 5px;
         }
-
+        
         .result-value {
             font-size: 24px;
-            font-weight: 700;
-            color: #2a5298;
+            font-weight: bold;
+            color: #1e3c72;
         }
-
-        .risk-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            margin-top: 5px;
-        }
-
-        .risk-low {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .risk-intermediate {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .risk-high {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .risk-very-high {
-            background: #dc3545;
-            color: white;
-        }
-
-        .recommendations {
-            margin-top: 20px;
-            padding: 20px;
+        
+        .risk-low { border-left-color: #28a745; }
+        .risk-low-mod { border-left-color: #ffc107; }
+        .risk-mod-high { border-left-color: #fd7e14; }
+        .risk-high { border-left-color: #dc3545; }
+        
+        .management-box {
             background: white;
-            border-radius: 6px;
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 8px;
             border: 2px solid #667eea;
         }
-
-        .recommendations h3 {
-            color: #2a5298;
-            margin-bottom: 12px;
-            font-size: 18px;
+        
+        .management-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1e3c72;
+            margin-bottom: 10px;
         }
-
-        .recommendations ul {
-            list-style-position: inside;
-            color: #333;
-            line-height: 1.8;
-        }
-
-        .recommendations li {
-            margin-bottom: 8px;
-        }
-
-        .info-box {
-            background: #e7f3ff;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 4px solid #2196F3;
-            margin-bottom: 20px;
+        
+        .management-text {
             font-size: 14px;
-            color: #0d47a1;
+            line-height: 1.6;
+            color: #333;
         }
-
-        .grid {
+        
+        .bayesian-details {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            border-left: 4px solid #0066cc;
+        }
+        
+        .bayesian-title {
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+        
+        .bayesian-calc {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        
+        .score-breakdown {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
         }
-
+        
+        .score-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .score-item-label {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .score-item-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1e3c72;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #dee2e6;
+        }
+        
         @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
             .header h1 {
-                font-size: 24px;
+                font-size: 22px;
             }
-
+            
             .content {
                 padding: 20px;
             }
-        }
-
-        .footer {
-            text-align: center;
-            padding: 20px;
-            background: #f8f9fa;
-            color: #666;
-            font-size: 13px;
-        }
-
-        .calculation-details {
-            margin-top: 15px;
-            padding: 15px;
-            background: #fff;
-            border-radius: 6px;
-            border: 1px solid #e0e0e0;
-            font-size: 14px;
-        }
-
-        .calculation-details h4 {
-            color: #2a5298;
-            margin-bottom: 10px;
-        }
-
-        .calculation-details p {
-            margin-bottom: 8px;
-            color: #555;
-            line-height: 1.6;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Paracentesis Recurrence Calculator</h1>
-            <p>Bayesian Framework for Cirrhosis Management</p>
+            <h1>🏥 First-LVP Paracentesis Risk Calculator</h1>
+            <p>Bayesian Framework for Predicting Recurrent Paracentesis in Cirrhosis</p>
+            <p style="font-size: 12px; margin-top: 10px;">Predicts 3-month recurrence after FIRST large-volume paracentesis</p>
         </div>
-
+        
         <div class="content">
-            <div class="info-box">
-                <strong>📋 Purpose:</strong> This calculator estimates the probability of requiring repeat paracentesis within 3 months using a Bayesian approach that incorporates MELD-Na, sodium levels, clinical status, and treatment factors.
+            <div class="alert alert-info">
+                <strong>📋 Purpose:</strong> This calculator identifies high-risk patients at FIRST paracentesis—before refractory ascites develops—enabling timely TIPS evaluation and transplant referral when patients are optimal candidates.
             </div>
-
+            
+            <div class="alert">
+                <strong>⚠️ Important:</strong> This calculator is for clinical decision support only. All management decisions should be made in consultation with hepatology specialists. Prospective validation is ongoing.
+            </div>
+            
             <form id="calculatorForm">
+                <!-- Section 1: MELD 3.0 -->
                 <div class="section">
-                    <div class="section-title">Patient Characteristics</div>
-                    
-                    <div class="grid">
-                        <div class="input-group">
-                            <label for="meldNa">MELD-Na Score</label>
-                            <input type="number" id="meldNa" min="6" max="40" required placeholder="e.g., 20">
-                        </div>
-
-                        <div class="input-group">
-                            <label for="sodium">Serum Sodium (mmol/L)</label>
-                            <input type="number" id="sodium" min="110" max="150" required placeholder="e.g., 128">
-                        </div>
+                    <div class="section-title">
+                        <span class="section-number">1</span>
+                        MELD 3.0 Score
                     </div>
-
-                    <div class="input-group">
-                        <label for="ascitesStatus">Ascites Status</label>
-                        <select id="ascitesStatus" required>
-                            <option value="">Select status...</option>
-                            <option value="first">First episode</option>
-                            <option value="recurrent">Recurrent but diuretic-responsive</option>
-                            <option value="refractory">Refractory ascites</option>
+                    <div class="form-group">
+                        <label for="meld">MELD 3.0 Value:</label>
+                        <input type="number" id="meld" min="6" max="40" value="15" required>
+                        <div class="helper-text">Enter MELD 3.0 score (typically 6-40). Incorporates bilirubin, INR, creatinine, sodium, albumin, and sex.</div>
+                    </div>
+                </div>
+                
+                <!-- Section 2: MAP -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="section-number">2</span>
+                        Mean Arterial Pressure (MAP)
+                    </div>
+                    <div class="form-group">
+                        <label for="map">MAP (mmHg):</label>
+                        <input type="number" id="map" min="40" max="120" value="75" required>
+                        <div class="helper-text">Enter mean arterial pressure after volume resuscitation. Formula: (2×Diastolic + Systolic) ÷ 3</div>
+                    </div>
+                </div>
+                
+                <!-- Section 3: Alcohol -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="section-number">3</span>
+                        Disease Activity: Alcohol
+                    </div>
+                    <div class="form-group">
+                        <label for="alcohol">Alcohol Use Status:</label>
+                        <select id="alcohol" required>
+                            <option value="none">Non-alcohol etiology</option>
+                            <option value="active">Active ongoing use</option>
+                            <option value="recent">Recent cessation (&lt;3 months)</option>
+                            <option value="abstinent">Sustained abstinence (≥3 months)</option>
                         </select>
+                        <div class="helper-text">Select current alcohol use status. Sustained abstinence dramatically reduces recurrence risk.</div>
                     </div>
                 </div>
-
+                
+                <!-- Section 4: Viral -->
                 <div class="section">
-                    <div class="section-title">Procedural Factors</div>
+                    <div class="section-title">
+                        <span class="section-number">4</span>
+                        Disease Activity: Viral Hepatitis
+                    </div>
+                    <div class="form-group">
+                        <label for="viral">Viral Status (HCV/HBV):</label>
+                        <select id="viral" required>
+                            <option value="none">Non-viral etiology</option>
+                            <option value="active">Active viremia (HCV RNA+ or HBV DNA >2000)</option>
+                            <option value="naive">Treatment-naive, therapy to be initiated</option>
+                            <option value="suppressed">SVR achieved or viral suppression</option>
+                        </select>
+                        <div class="helper-text">HCV: Check RNA status. HBV: Check DNA level. SVR/suppression reduces risk 40-60%.</div>
+                    </div>
+                </div>
+                
+                <!-- Section 5: Modifiable -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="section-number">5</span>
+                        Modifiable Treatment Factors
+                    </div>
+                    <div class="form-group">
+                        <label for="diuretics">Diuretics Prescribed at Discharge:</label>
+                        <select id="diuretics" required>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                        <div class="helper-text">Spironolactone ± furosemide. Failure to prescribe increases recurrence risk 5-fold.</div>
+                    </div>
                     
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="lvpPerformed">
-                        <label for="lvpPerformed">LVP performed (current hospitalization or recent outpatient)</label>
-                    </div>
-
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="albuminGiven">
-                        <label for="albuminGiven">Albumin administered during LVP</label>
-                    </div>
-
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="diureticsRestarted">
-                        <label for="diureticsRestarted">Diuretics restarted/continued</label>
+                    <div class="form-group">
+                        <label for="albumin">Albumin Given (if >5L removed):</label>
+                        <select id="albumin" required>
+                            <option value="yes">Yes</option>
+                            <option value="no">No (when indicated)</option>
+                            <option value="na">N/A (&lt;5L removed)</option>
+                        </select>
+                        <div class="helper-text">Standard: 6-8g per liter removed beyond 5L. Reduces PICD risk.</div>
                     </div>
                 </div>
-
-                <button type="submit" class="calculate-btn">Calculate Risk</button>
+                
+                <button type="submit" class="calculate-btn">📊 Calculate Risk Score</button>
             </form>
-
+            
+            <!-- Results Section -->
             <div id="results" class="results">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #1e3c72;">📈 Risk Assessment Results</h2>
+                
+                <div class="result-item" id="scoreResult">
+                    <div class="result-label">Total Risk Score</div>
+                    <div class="result-value" id="scoreValue">—</div>
+                </div>
+                
+                <div class="result-item" id="categoryResult">
+                    <div class="result-label">Risk Category</div>
+                    <div class="result-value" id="categoryValue">—</div>
+                </div>
+                
                 <div class="result-item">
-                    <div class="result-label">Estimated Recurrence Probability:</div>
-                    <div class="result-value" id="probability">--</div>
-                    <div id="riskBadge" class="risk-badge">--</div>
+                    <div class="result-label">3-Month Recurrence Probability</div>
+                    <div class="result-value" id="probabilityValue">—</div>
                 </div>
-
-                <div class="calculation-details">
-                    <h4>Calculation Steps:</h4>
-                    <div id="calculationSteps"></div>
+                
+                <div class="score-breakdown" id="breakdown"></div>
+                
+                <div class="management-box">
+                    <div class="management-title">🎯 Recommended Management</div>
+                    <div class="management-text" id="managementText"></div>
                 </div>
-
-                <div class="recommendations">
-                    <h3>📌 Recommended Actions:</h3>
-                    <ul id="recommendationsList"></ul>
+                
+                <div class="bayesian-details">
+                    <div class="bayesian-title">🧮 Bayesian Calculation Details</div>
+                    <div id="bayesianCalc"></div>
                 </div>
             </div>
         </div>
-
+        
         <div class="footer">
-            Based on the Bayesian Framework for Recurrent Paracentesis in Cirrhosis<br>
-            <em>For educational purposes only. Clinical decisions should incorporate individual patient factors and clinical judgment.</em>
+            <p><strong>Citation:</strong> Predicting Recurrent Paracentesis After First Large-Volume Paracentesis in Cirrhosis: A Bayesian Framework and Clinical Risk Score (2026)</p>
+            <p style="margin-top: 10px;"><strong>Important Notes:</strong></p>
+            <p>• This calculator predicts risk at FIRST paracentesis only (before refractory ascites develops)</p>
+            <p>• MELD 3.0 incorporates sodium - do NOT use separate sodium predictor (avoids multicollinearity)</p>
+            <p>• Prospective validation ongoing - for clinical decision support only</p>
+            <p style="margin-top: 10px;">📧 For questions or collaboration: [Your Contact Information]</p>
         </div>
     </div>
-
+    
     <script>
         document.getElementById('calculatorForm').addEventListener('submit', function(e) {
             e.preventDefault();
             calculateRisk();
         });
-
+        
         function calculateRisk() {
             // Get input values
-            const meldNa = parseInt(document.getElementById('meldNa').value);
-            const sodium = parseInt(document.getElementById('sodium').value);
-            const ascitesStatus = document.getElementById('ascitesStatus').value;
-            const lvpPerformed = document.getElementById('lvpPerformed').checked;
-            const albuminGiven = document.getElementById('albuminGiven').checked;
-            const diureticsRestarted = document.getElementById('diureticsRestarted').checked;
-
-            let steps = [];
+            const meld = parseFloat(document.getElementById('meld').value);
+            const map = parseFloat(document.getElementById('map').value);
+            const alcohol = document.getElementById('alcohol').value;
+            const viral = document.getElementById('viral').value;
+            const diuretics = document.getElementById('diuretics').value;
+            const albumin = document.getElementById('albumin').value;
             
-            // Step 1: Determine prior probability based on ascites status and MELD-Na
-            let priorProb;
-            let priorDescription;
+            // Calculate points
+            let meldPoints = 0;
+            if (meld >= 25) meldPoints = 3;
+            else if (meld >= 20) meldPoints = 2;
+            else if (meld >= 15) meldPoints = 1;
             
-            if (ascitesStatus === 'refractory') {
-                priorProb = 0.93;
-                priorDescription = 'Refractory ascites baseline';
-                steps.push(`<p><strong>Step 1 - Prior Probability:</strong> ${(priorProb * 100).toFixed(0)}% (${priorDescription})</p>`);
+            let mapPoints = 0;
+            if (map < 70) mapPoints = 2;
+            else if (map < 85) mapPoints = 1;
+            
+            let alcoholPoints = 0;
+            if (alcohol === 'active') alcoholPoints = 2;
+            else if (alcohol === 'recent') alcoholPoints = 1;
+            else if (alcohol === 'abstinent') alcoholPoints = -1;
+            
+            let viralPoints = 0;
+            if (viral === 'active') viralPoints = 2;
+            else if (viral === 'naive') viralPoints = 1;
+            else if (viral === 'suppressed') viralPoints = -1;
+            
+            let modifiablePoints = 0;
+            if (diuretics === 'no') modifiablePoints += 3;
+            if (albumin === 'no') modifiablePoints += 1;
+            
+            // Total score
+            const totalScore = meldPoints + mapPoints + alcoholPoints + viralPoints + modifiablePoints;
+            
+            // Determine risk category and probability
+            let category, probability, riskClass, managementText;
+            
+            if (totalScore <= 0) {
+                category = 'Low Risk';
+                probability = '<20%';
+                riskClass = 'risk-low';
+                managementText = '<strong>Medical Management:</strong> Spironolactone 100mg daily (titrate to 200-400mg as tolerated), add furosemide 40mg if needed. Sodium restriction <2g/day.<br><br><strong>Disease-Specific Treatment:</strong> If alcohol: addiction treatment mandatory. If viral: initiate DAA/NUC immediately. If NASH: metabolic optimization.<br><br><strong>Monitoring:</strong> Routine hepatology follow-up in 3-4 weeks. Labs (BMP, LFTs) at 2 weeks.<br><br><strong>Transplant:</strong> Initiate evaluation discussion, complete workup within 3-6 months (not urgent).';
+            } else if (totalScore <= 3) {
+                category = 'Low-Moderate Risk';
+                probability = '25-45%';
+                riskClass = 'risk-low-mod';
+                managementText = '<strong>Enhanced Medical Management:</strong> Maximal diuretics, weekly weight monitoring, aggressive treatment of underlying disease.<br><br><strong>Monitoring:</strong> Early hepatology review within 1-2 weeks. Establish outpatient LVP access pathway.<br><br><strong>Transplant:</strong> Active evaluation, target completion in 2-3 months.<br><br><strong>TIPS Discussion:</strong> Educate patient: "If you need another paracentesis within 3-4 months, we will discuss TIPS evaluation at that time."';
+            } else if (totalScore <= 6) {
+                category = 'Moderate-High Risk';
+                probability = '50-65%';
+                riskClass = 'risk-mod-high';
+                managementText = '<strong>Proactive TIPS Planning:</strong> Baseline cardiac evaluation (echo, EKG) to assess TIPS candidacy NOW, before it\'s urgently needed. Address contraindications proactively.<br><br><strong>Disease Treatment:</strong> Aggressive addiction/viral treatment—success may avoid TIPS need.<br><br><strong>Transplant:</strong> EXPEDITED evaluation (4-6 weeks), active listing.<br><br><strong>Explicit Plan:</strong> "Given your 50-65% chance of needing repeated procedures, we are preparing for possible TIPS. We will try optimal medical therapy first, but if ascites recurs within 2-3 months or you require a second paracentesis, we will proceed with TIPS evaluation."';
             } else {
-                // Start with general decompensated ascites prior
-                priorProb = 0.30;
-                priorDescription = 'General decompensated ascites';
-                
-                // Adjust based on MELD-Na
-                if (meldNa >= 20) {
-                    priorProb = 0.50;
-                    priorDescription = 'Adjusted for MELD-Na ≥20';
-                } else if (meldNa < 15) {
-                    priorProb = 0.20;
-                    priorDescription = 'Adjusted for MELD-Na <15';
-                }
-                
-                // Further adjust for hyponatremia
-                if (sodium < 130 && meldNa >= 15) {
-                    priorProb = Math.min(priorProb + 0.10, 0.60);
-                    priorDescription += ' and Na <130';
-                }
-                
-                steps.push(`<p><strong>Step 1 - Prior Probability:</strong> ${(priorProb * 100).toFixed(0)}% (${priorDescription})</p>`);
+                category = 'High Risk';
+                probability = '>70%';
+                riskClass = 'risk-high';
+                managementText = '<strong>PREPARE FOR TIPS:</strong> Complete TIPS candidacy assessment within 2 weeks (echo, hepatic vein pressure gradient if available, anesthesia assessment). Identify and address any modifiable contraindications.<br><br><strong>Transplant:</strong> URGENT evaluation, active listing with appropriate priority.<br><br><strong>Aggressive Disease Treatment:</strong> Addiction/viral treatment concurrent (not sequential) with TIPS planning.<br><br><strong>Expectation Setting:</strong> "You have >70% chance of needing repeated procedures. Rather than waiting for you to undergo multiple paracenteses, we recommend preparing for TIPS now. We will optimize medical therapy, but if ascites recurs (which is likely), we will proceed quickly to TIPS rather than continuing serial procedures."';
             }
-            
-            // Convert to odds
-            let odds = priorProb / (1 - priorProb);
-            steps.push(`<p><strong>Prior Odds:</strong> ${odds.toFixed(2)} (or ${odds.toFixed(2)}:1)</p>`);
-            
-            // Step 2: Apply LVP likelihood ratio if performed
-            if (lvpPerformed) {
-                const lrPlus = 8.0;
-                odds = odds * lrPlus;
-                steps.push(`<p><strong>Step 2 - LVP Performed:</strong> Applied LR+ of ${lrPlus} → New odds: ${odds.toFixed(2)}</p>`);
-            }
-            
-            // Step 3: Apply albumin effect (reduces odds)
-            if (albuminGiven && lvpPerformed) {
-                const lrMinus = 0.5;
-                odds = odds * lrMinus;
-                steps.push(`<p><strong>Step 3 - Albumin Given:</strong> Applied LR- of ${lrMinus} → New odds: ${odds.toFixed(2)}</p>`);
-            }
-            
-            // Step 4: Special case for no diuretics
-            if (lvpPerformed && !diureticsRestarted) {
-                // Override with very high probability
-                odds = 0.93 / 0.07; // ~13.3
-                steps.push(`<p><strong>Step 4 - No Diuretics:</strong> ⚠️ Critical factor - odds set to ${odds.toFixed(2)} (93% probability)</p>`);
-            } else if (diureticsRestarted && lvpPerformed && ascitesStatus !== 'refractory') {
-                // If on spironolactone and responsive, use lower endpoint
-                const diureticEffect = 0.3; // Reduces odds significantly
-                odds = odds * diureticEffect;
-                steps.push(`<p><strong>Step 4 - Diuretics Restarted:</strong> Applied protective effect → New odds: ${odds.toFixed(2)}</p>`);
-            }
-            
-            // Convert back to probability
-            let finalProb = odds / (1 + odds);
             
             // Display results
-            document.getElementById('probability').textContent = (finalProb * 100).toFixed(0) + '%';
-            document.getElementById('calculationSteps').innerHTML = steps.join('');
+            document.getElementById('scoreValue').textContent = totalScore;
+            document.getElementById('categoryValue').textContent = category;
+            document.getElementById('probabilityValue').textContent = probability;
+            document.getElementById('managementText').innerHTML = managementText;
             
-            // Determine risk category and recommendations
-            let riskCategory, riskClass, recommendations;
+            // Apply risk class
+            const categoryResult = document.getElementById('categoryResult');
+            categoryResult.className = 'result-item ' + riskClass;
             
-            if (finalProb < 0.30) {
-                riskCategory = 'Low Risk';
-                riskClass = 'risk-low';
-                recommendations = [
-                    'Continue or initiate oral diuretics (spironolactone ± furosemide)',
-                    'Sodium restriction <2g/day',
-                    'Routine outpatient follow-up in 2-4 weeks',
-                    'Patient education on symptoms requiring urgent attention'
-                ];
-            } else if (finalProb < 0.60) {
-                riskCategory = 'Intermediate Risk';
-                riskClass = 'risk-intermediate';
-                recommendations = [
-                    'Ensure robust diuretic regimen and adherence',
-                    'Reinforce sodium restriction',
-                    'Schedule early outpatient review (1-2 weeks)',
-                    'Consider pre-arranged day-unit access for LVP if symptoms recur',
-                    'Monitor weight and abdominal girth'
-                ];
-            } else if (finalProb < 0.80) {
-                riskCategory = 'High Risk';
-                riskClass = 'risk-high';
-                recommendations = [
-                    'Plan for likely recurrent LVP (establish outpatient LVP pathway)',
-                    'Evaluate candidacy for TIPS if no major contraindications',
-                    'Refer for transplant evaluation if not already listed',
-                    'Consider albumin administration with future LVP',
-                    'Close monitoring - follow-up within 1 week'
-                ];
-            } else {
-                riskCategory = 'Very High Risk';
-                riskClass = 'risk-very-high';
-                recommendations = [
-                    '⚠️ URGENT: Avoid repeated unscheduled LVP as sole long-term strategy',
-                    'Strongly consider TIPS evaluation (if MELD-Na <18-20 and no severe encephalopathy)',
-                    'Expedite transplant listing and evaluation',
-                    'Establish regular scheduled LVP pathway or consider tunneled catheter',
-                    'Palliative care consultation if TIPS/transplant not candidates',
-                    'If no diuretics: RESTART IMMEDIATELY - this is modifiable!'
-                ];
-            }
+            // Score breakdown
+            const breakdown = document.getElementById('breakdown');
+            breakdown.innerHTML = `
+                <div class="score-item">
+                    <span class="score-item-label">MELD 3.0 (${meld})</span>
+                    <span class="score-item-value">${meldPoints > 0 ? '+' : ''}${meldPoints}</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">MAP (${map} mmHg)</span>
+                    <span class="score-item-value">${mapPoints > 0 ? '+' : ''}${mapPoints}</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">Alcohol Status</span>
+                    <span class="score-item-value">${alcoholPoints > 0 ? '+' : ''}${alcoholPoints}</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">Viral Status</span>
+                    <span class="score-item-value">${viralPoints > 0 ? '+' : ''}${viralPoints}</span>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">Modifiable Factors</span>
+                    <span class="score-item-value">${modifiablePoints > 0 ? '+' : ''}${modifiablePoints}</span>
+                </div>
+            `;
             
-            // Update UI
-            const badge = document.getElementById('riskBadge');
-            badge.textContent = riskCategory;
-            badge.className = 'risk-badge ' + riskClass;
-            
-            const recList = document.getElementById('recommendationsList');
-            recList.innerHTML = recommendations.map(r => `<li>${r}</li>`).join('');
+            // Bayesian calculation
+            calculateBayesian(meld, map, alcohol, viral, diuretics, albumin);
             
             // Show results
             document.getElementById('results').classList.add('show');
-            
-            // Smooth scroll to results
             document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function calculateBayesian(meld, map, alcohol, viral, diuretics, albumin) {
+            // Determine prior probability based on etiology
+            let prior = 0.35; // General baseline
+            let priorDescription = "General cirrhosis population";
+            
+            if (alcohol === 'active') {
+                prior = 0.75;
+                priorDescription = "Alcohol cirrhosis, active use";
+            } else if (alcohol === 'abstinent') {
+                prior = 0.35;
+                priorDescription = "Alcohol cirrhosis, sustained abstinence";
+            } else if (viral === 'active') {
+                prior = 0.65;
+                priorDescription = "Viral hepatitis, active viremia";
+            } else if (viral === 'suppressed') {
+                prior = 0.25;
+                priorDescription = "Viral hepatitis, SVR/suppression";
+            }
+            
+            let priorOdds = prior / (1 - prior);
+            let calculation = `<strong>Prior Probability:</strong> ${(prior * 100).toFixed(0)}% (${priorDescription})<br>`;
+            calculation += `<strong>Prior Odds:</strong> ${priorOdds.toFixed(2)}<br><br>`;
+            
+            calculation += `<strong>Sequential Likelihood Ratio Application:</strong><br>`;
+            
+            let currentOdds = priorOdds;
+            
+            // MELD 3.0 effect
+            let meldLR = 1.0;
+            if (meld >= 25) meldLR = 1.8;
+            else if (meld >= 20) meldLR = 1.5;
+            else if (meld >= 15) meldLR = 1.2;
+            currentOdds *= meldLR;
+            calculation += `• MELD 3.0 ${meld} (LR = ${meldLR}): ${currentOdds.toFixed(2)}<br>`;
+            
+            // MAP effect
+            let mapLR = 1.0;
+            if (map < 70) mapLR = 1.6;
+            else if (map < 85) mapLR = 1.2;
+            else mapLR = 0.9;
+            currentOdds *= mapLR;
+            calculation += `• MAP ${map} mmHg (LR = ${mapLR}): ${currentOdds.toFixed(2)}<br>`;
+            
+            // Disease activity (already in prior, but additional effect)
+            if (alcohol === 'active') {
+                currentOdds *= 1.3;
+                calculation += `• Active alcohol use (LR = 1.3): ${currentOdds.toFixed(2)}<br>`;
+            } else if (alcohol === 'abstinent') {
+                currentOdds *= 0.7;
+                calculation += `• Sustained abstinence (LR = 0.7): ${currentOdds.toFixed(2)}<br>`;
+            }
+            
+            if (viral === 'active') {
+                currentOdds *= 1.3;
+                calculation += `• Active viremia (LR = 1.3): ${currentOdds.toFixed(2)}<br>`;
+            } else if (viral === 'suppressed') {
+                currentOdds *= 0.6;
+                calculation += `• Viral suppression (LR = 0.6): ${currentOdds.toFixed(2)}<br>`;
+            }
+            
+            // Albumin effect
+            if (albumin === 'yes') {
+                currentOdds *= 0.5;
+                calculation += `• Albumin given (LR = 0.5): ${currentOdds.toFixed(2)}<br>`;
+            }
+            
+            // Diuretics effect
+            if (diuretics === 'yes') {
+                currentOdds *= 0.25;
+                calculation += `• Diuretics prescribed (LR = 0.25): ${currentOdds.toFixed(2)}<br>`;
+            } else {
+                currentOdds *= 4.0;
+                calculation += `• NO diuretics (LR = 4.0): ${currentOdds.toFixed(2)}<br>`;
+            }
+            
+            // Final probability
+            const posteriorProb = currentOdds / (1 + currentOdds);
+            calculation += `<br><strong>Final Posterior Odds:</strong> ${currentOdds.toFixed(2)}<br>`;
+            calculation += `<strong>Final Posterior Probability:</strong> ${(posteriorProb * 100).toFixed(1)}%<br>`;
+            
+            calculation += `<br><em>Note: Risk categories are based on scoring system which approximates these Bayesian probabilities for clinical use.</em>`;
+            
+            document.getElementById('bayesianCalc').innerHTML = calculation;
         }
     </script>
 </body>
